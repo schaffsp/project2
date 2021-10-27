@@ -43,7 +43,6 @@ async function setupService() {
             const query = `INSERT INTO drivethru.measurement (drivethru.measurement.MEAS_ID, drivethru.measurement.REST_ID, drivethru.measurement.MEAS_TIME_IN, drivethru.measurement.MEAS_TIME_OUT, drivethru.measurement.MEAS_DRIVETHROUGH) VALUES(?, ?, ?, ?, ?)`;
             connection.query(query, parameters, (error, rows) => {
                 if (error) {
-                    console.log('dammit');
                     response.status(500);
                     response.json({
                         ok: false,
@@ -66,23 +65,24 @@ async function setupService() {
           }
     });
 
-        // Get a measurement from the database based on its id
-        service.get('/measurement/:id', (request, response) => {
-            const query = `SELECT * FROM drivethru.measurement WHERE drivethru.measurement.meas_id = ${parseInt(request.params.id)}`;
-            connection.query(query, (error, rows) => {
-                if (error) {
-                    response.status(500);
-                    response.json({
-                        ok: false,
+    // Get a measurement from the database based on its id
+    service.get('/measurement/:id', (request, response) => {
+        const parameters = [parseInt(request.params.id)];
+        const query = `SELECT * FROM drivethru.measurement WHERE drivethru.measurement.meas_id = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
                         results: error.message,
-                    });
-                } else {
-                    response.json({
-                        ok: true,
-                        results: rows,
-                    });
-                }
-            });
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: rows.map(parseMeasurement),
+                });
+            }
+        });
     });
 
     // Delete a measurement in the database
@@ -104,6 +104,54 @@ async function setupService() {
             }
         });
     });
+
+    // Update a measurement in the database
+    service.patch('/measurement/:id', (request, response) => {
+        if (request.body.hasOwnProperty('rest_id') &&
+            request.body.hasOwnProperty('meas_time_in') &&
+            request.body.hasOwnProperty('meas_time_out') &&
+            request.body.hasOwnProperty('meas_drive_through')) 
+        {
+            const parameters = [
+                parseInt(request.body.rest_id),
+                request.body.meas_time_in,
+                request.body.meas_time_out,
+                request.body.meas_drive_through,
+                parseInt(request.params.id),
+            ];
+
+            const query = `UPDATE drivethru.measurement SET drivethru.measurement.REST_ID = ?, drivethru.measurement.MEAS_TIME_IN = ?, drivethru.measurement.MEAS_TIME_OUT = ?, drivethru.measurement.MEAS_DRIVETHROUGH = ? WHERE drivethru.measurement.MEAS_ID = ?`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(404);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete measurement.',
+            });
+          }
+    });
+}
+
+function parseMeasurement(row) {
+    return {
+      meas_id: row.meas_id,
+      rest_id: row.rest_id,
+      meas_time_in: row.meas_time_in,
+      meas_time_out: row.meas_time_out,
+      meas_drive_through: row.meas_drive_through,
+    };
 }
 
 (async function () {
