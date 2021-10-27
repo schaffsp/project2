@@ -279,7 +279,7 @@ async function setupService() {
         {
             const parameters = [
                 request.body.option_id,
-                request.body.rest_id,,
+                request.body.rest_id,
             ];
 
             const query = `INSERT INTO drivethru.accessibility (drivethru.accessibility.OPTION_ID, drivethru.accessibility.REST_ID) VALUES (?, ?)`;
@@ -374,6 +374,119 @@ async function setupService() {
             response.json({
               ok: false,
               results: 'Incomplete accessibility.',
+            });
+          }
+    });
+
+    /*--------------------------------------/
+    /                                       /
+    /              RESTAURANT               /
+    /                                       /
+    /--------------------------------------*/
+
+    // Post a new restaurant to the database
+    service.post('/restaurant', (request, response) => {
+        if (request.body.hasOwnProperty('rest_id') && request.body.hasOwnProperty('rest_location')  && request.body.hasOwnProperty('chain_id'))
+        {
+            const parameters = [
+                request.body.rest_id,
+                request.body.rest_location,
+                request.body.chain_id,
+            ];
+
+            const query = `INSERT INTO drivethru.restaurant (drivethru.restaurant.REST_ID, drivethru.restaurant.REST_LOCATION, drivethru.restaurant.CHAIN_ID) VALUES (?, ?, ?)`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(500);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                        results: 'Success!',
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete restaurant.',
+            });
+          }
+    });
+
+    // Get a restaurant given its id
+    service.get('/restaurant/:rest_id', (request, response) => {
+        const parameters = [parseInt(request.params.rest_id)];
+        const query = `SELECT * FROM drivethru.restaurant WHERE drivethru.restaurant.REST_ID = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                        results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: rows.map(parseRow),
+                });
+            }
+        });
+    });
+
+    // Delete an restaurant in the database
+    service.delete('/restaurant/:rest_id', (request, response) => {
+        const parameters = [parseInt(request.params.rest_id)];
+        const query = `DELETE FROM drivethru.restaurant WHERE drivethru.restaurant.rest_id = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: "id: " + request.params.rest_id + " has been deleted from the database."
+                });
+            }
+        });
+    });
+
+    // Update an restaurant in the database
+    service.patch('/restaurant/:rest_id', (request, response) => {
+        if (request.body.hasOwnProperty('rest_location') && request.body.hasOwnProperty('chain_id'))
+        {
+            const parameters = [
+                request.body.rest_location,
+                request.body.chain_id,
+                parseInt(request.params.rest_id),
+            ];
+
+            const query = `UPDATE drivethru.restaurant SET drivethru.restaurant.REST_LOCATION = ?, drivethru.restaurant.CHAIN_ID = ? WHERE drivethru.restaurant.REST_ID = ?`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(404);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete restaurant.',
             });
           }
     });
