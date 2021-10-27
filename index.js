@@ -490,6 +490,119 @@ async function setupService() {
             });
           }
     });
+
+    /*--------------------------------------/
+    /                                       /
+    /                CHAIN                  /
+    /                                       /
+    /--------------------------------------*/
+
+    // Post a new chain to the database
+    service.post('/chain', (request, response) => {
+        if (request.body.hasOwnProperty('chain_id') && request.body.hasOwnProperty('chain_name')  && request.body.hasOwnProperty('chain_phone'))
+        {
+            const parameters = [
+                request.body.chain_id,
+                request.body.chain_name,
+                request.body.chain_phone,
+            ];
+
+            const query = `INSERT INTO drivethru.chain (drivethru.chain.CHAIN_ID, drivethru.chain.CHAIN_NAME, drivethru.chain.CHAIN_PHONE) VALUES (?, ?, ?)`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(500);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                        results: 'Success!',
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete restaurant.',
+            });
+          }
+    });
+
+    // Get a chain given its id
+    service.get('/chain/:chain_id', (request, response) => {
+        const parameters = [parseInt(request.params.chain_id)];
+        const query = `SELECT * FROM drivethru.chain WHERE drivethru.chain.chain_id = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                        results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: rows.map(parseRow),
+                });
+            }
+        });
+    });
+
+    // Delete a chain in the database
+    service.delete('/chain/:chain_id', (request, response) => {
+        const parameters = [parseInt(request.params.rest_id)];
+        const query = `DELETE FROM drivethru.chain WHERE drivethru.chain.chain_id = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: "id: " + request.params.chain_id + " has been deleted from the database."
+                });
+            }
+        });
+    });
+
+    // Update a chain in the database
+    service.patch('/chain/:chain_id', (request, response) => {
+        if (request.body.hasOwnProperty('chain_name') && request.body.hasOwnProperty('chain_phone'))
+        {
+            const parameters = [
+                request.body.chain_name,
+                request.body.chain_phone,
+                parseInt(request.params.chain_id),
+            ];
+
+            const query = `UPDATE drivethru.chain SET drivethru.chain.chain_name = ?, drivethru.chain.chain_phone = ? WHERE drivethru.chain.chain_id = ?`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(404);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete chain.',
+            });
+          }
+    });
 }
 
 function parseRow(row) {
