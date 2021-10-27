@@ -24,6 +24,18 @@ async function setupService() {
     service.use(express.json());
 
     var meas_tracker = 100;
+    var opt_tracker = 100;
+
+    service.use((request, response, next) => {
+        response.set('Access-Control-Allow-Origin', '*');
+        next();
+    });
+
+    /*--------------------------------------/
+    /                                       /
+    /              MEASUREMENT              /
+    /                                       /
+    /--------------------------------------*/
 
     // Post a new measurement to the database
     service.post('/measurement', (request, response) => {
@@ -79,7 +91,7 @@ async function setupService() {
             } else {
                 response.json({
                     ok: true,
-                    results: rows.map(parseMeasurement),
+                    results: rows.map(parseRow),
                 });
             }
         });
@@ -142,16 +154,128 @@ async function setupService() {
             });
           }
     });
+
+    /*--------------------------------------/
+    /                                       /
+    /                OPTION                 /
+    /                                       /
+    /--------------------------------------*/
+
+    // Post a new option to the database
+    service.post('/option', (request, response) => {
+        if (request.body.hasOwnProperty('option_name'))
+        {
+            const parameters = [
+                opt_tracker + 1,
+                request.body.option_name,
+            ];
+
+            const query = `INSERT INTO drivethru.option (drivethru.option.OPTION_ID, drivethru.option.OPTION_NAME) VALUES (?, ?)`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(500);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                        results: 'Success!',
+                    });
+                    opt_tracker += 1;
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete measurement.',
+            });
+          }
+    });
+
+    // Get an option from the database based on its id
+    service.get('/option/:id', (request, response) => {
+        const parameters = [parseInt(request.params.id)];
+        const query = `SELECT * FROM drivethru.option WHERE drivethru.option.OPTION_ID = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                        results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: rows.map(parseRow),
+                });
+            }
+        });
+    });
+
+    // Delete an option in the database
+    service.delete('/option/:id', (request, response) => {
+        const parameters = [parseInt(request.params.id)];
+        const query = `DELETE FROM drivethru.option WHERE drivethru.option.option_id = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: "id: " + request.params.id + " has been deleted from the database."
+                });
+            }
+        });
+    });
+
+    // Update an option in the database
+    service.patch('/option/:id', (request, response) => {
+        if (request.body.hasOwnProperty('option_name'))
+        {
+            const parameters = [
+                request.body.option_name,
+                parseInt(request.params.id),
+            ];
+
+            const query = `UPDATE drivethru.option SET drivethru.option.OPTION_NAME = ? WHERE drivethru.option.OPTION_ID = ?`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(404);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete option.',
+            });
+          }
+    });
 }
 
-function parseMeasurement(row) {
-    return {
-      meas_id: row.meas_id,
-      rest_id: row.rest_id,
-      meas_time_in: row.meas_time_in,
-      meas_time_out: row.meas_time_out,
-      meas_drive_through: row.meas_drive_through,
-    };
+function parseRow(row) {
+    var output = [];
+    const result = Object.values(JSON.parse(JSON.stringify(row)));
+    result.forEach((v) => {
+        output.push(v);
+    });
+
+    return output;
 }
 
 (async function () {
