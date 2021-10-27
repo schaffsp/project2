@@ -1,0 +1,6 @@
+curl --header 'Content-Type: application/json' \
+  --data '{"rest_id": 13, "meas_time_in": "2000-01-01 02:10:10", "meas_time_out": "2000-01-01 02:10:20", "meas_drive_through": true}' \
+  http://localhost:8443/measurement
+
+curl --request DELETE \
+  http://localhost:8443/measurement/101
