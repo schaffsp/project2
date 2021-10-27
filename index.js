@@ -266,6 +266,117 @@ async function setupService() {
             });
           }
     });
+
+    /*--------------------------------------/
+    /                                       /
+    /            ACCESSIBILITY              /
+    /                                       /
+    /--------------------------------------*/
+
+    // Post a new accessibility option to the database
+    service.post('/accessibility', (request, response) => {
+        if (request.body.hasOwnProperty('option_id') && request.body.hasOwnProperty('rest_id'))
+        {
+            const parameters = [
+                request.body.option_id,
+                request.body.rest_id,,
+            ];
+
+            const query = `INSERT INTO drivethru.accessibility (drivethru.accessibility.OPTION_ID, drivethru.accessibility.REST_ID) VALUES (?, ?)`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(500);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                        results: 'Success!',
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete accessibility.',
+            });
+          }
+    });
+
+    // Get all option_ids that correspond to the given rest_id
+    service.get('/accessibility/:rest_id', (request, response) => {
+        const parameters = [parseInt(request.params.rest_id)];
+        const query = `SELECT * FROM drivethru.accessibility WHERE drivethru.accessibility.REST_ID = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                        results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: rows.map(parseRow),
+                });
+            }
+        });
+    });
+
+    // Delete an accessibility option in the database
+    service.delete('/accessibility/:rest_id', (request, response) => {
+        const parameters = [parseInt(request.params.rest_id)];
+        const query = `DELETE FROM drivethru.accessibility WHERE drivethru.accessibility.rest_id = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: "id: " + request.params.rest_id + " has been deleted from the database."
+                });
+            }
+        });
+    });
+
+    // Update an accessibility option in the database
+    service.patch('/accessibility/:rest_id', (request, response) => {
+        if (request.body.hasOwnProperty('option_id'))
+        {
+            const parameters = [
+                request.body.option_id,
+                parseInt(request.params.rest_id),
+            ];
+
+            const query = `UPDATE drivethru.accessibility SET drivethru.accessibility.OPTION_ID = ? WHERE drivethru.accessibility.REST_ID = ?`;
+            connection.query(query, parameters, (error, rows) => {
+                if (error) {
+                    response.status(404);
+                    response.json({
+                        ok: false,
+                        results: error.message,
+                    });
+                } else {
+                    response.json({
+                        ok: true,
+                    });
+                }
+            });
+        } else {
+            response.status(400);
+            response.json({
+              ok: false,
+              results: 'Incomplete accessibility.',
+            });
+          }
+    });
 }
 
 function parseRow(row) {
