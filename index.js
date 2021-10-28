@@ -441,7 +441,7 @@ async function setupService() {
     // Delete an restaurant in the database
     service.delete('/restaurant/:rest_id', (request, response) => {
         const parameters = [parseInt(request.params.rest_id)];
-        const query = `DELETE FROM drivethru.restaurant WHERE drivethru.restaurant.rest_id = ?`;
+        const query = `DELETE drivethru.accessibility FROM drivethru.accessibility WHERE drivethru.accessibility.REST_ID = 3?`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -452,7 +452,34 @@ async function setupService() {
             } else {
                 response.json({
                     ok: true,
-                    results: "id: " + request.params.rest_id + " has been deleted from the database."
+                });
+            }
+        });
+        query = 'DELETE drivethru.measurement FROM drivethru.measurement WHERE drivethru.measurement.REST_ID = ?';
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                });
+            }
+        });
+        query = 'DELETE drivethru.restaurant FROM drivethru.restaurant WHERE drivethru.restaurant.REST_ID = ?';
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
                 });
             }
         });
@@ -553,8 +580,11 @@ async function setupService() {
 
     // Delete a chain in the database
     service.delete('/chain/:chain_id', (request, response) => {
-        const parameters = [parseInt(request.params.rest_id)];
-        const query = `DELETE FROM drivethru.chain WHERE drivethru.chain.chain_id = ?`;
+        const parameters = [parseInt(request.params.chain_id)];
+        const query = `DELETE drivethru.accessibility FROM drivethru.accessibility
+            JOIN drivethru.restaurant ON drivethru.accessibility.REST_ID = drivethru.restaurant.REST_ID
+            JOIN drivethru.chain ON drivethru.chain.CHAIN_ID = drivethru.restaurant.CHAIN_ID
+            WHERE drivethru.chain.CHAIN_ID = ?`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -565,10 +595,57 @@ async function setupService() {
             } else {
                 response.json({
                     ok: true,
-                    results: "id: " + request.params.chain_id + " has been deleted from the database."
                 });
             }
         });
+        query = `DELETE drivethru.measurement FROM drivethru.measurement
+        JOIN drivethru.restaurant ON drivethru.measurement.REST_ID = drivethru.restaurant.REST_ID
+        JOIN drivethru.chain ON drivethru.chain.CHAIN_ID = drivethru.restaurant.CHAIN_ID
+        WHERE drivethru.chain.CHAIN_ID = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                });
+            }
+        });
+        query = `DELETE drivethru.restaurant FROM drivethru.restaurant
+        JOIN drivethru.chain ON drivethru.chain.CHAIN_ID = drivethru.restaurant.CHAIN_ID
+        WHERE drivethru.chain.CHAIN_ID = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                });
+            }
+        });
+        query = `DELETE drivethru.chain FROM drivethru.chain WHERE drivethru.chain.CHAIN_ID = ?`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                    results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                });
+            }
+        });
+        
     });
 
     // Update a chain in the database
