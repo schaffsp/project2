@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <h1>Project 2 - Sam Schafft</h1>
+        <ol>
+            <li>This service is the middle point for a drive through app. The SQL database has five relational tables and a bunch of constraints.</li>
+            <li>I used MySQL.</li>
+            <li>I provided an express based web service to interact with the database.</li>
+            <li>The web service should be avaliable at https://project2.YOUR-schafftsp.me:8443/.</li>
+            <li>The end points are named after the tables they interact with.</li>
+            <li>The webservice uses JSON.</li>
+            <li>CRUD operations should be supported for all five of the database tables.</li>
+            <li>The database is accessible through the droplet.</li>
+            <li>I used the tutorial in the textbook to implement Nginx.</li>
+            <li>To my knowledge, the webservice this.</li>
+            <li>The service uses pm2.</li>
+            <li>My github repo was shared with the user twodee.</li>
+            <li>The DDL of my database is in the repo, the passwords hopefully are not.</li>
+            <li>I have multiple commints over multiple days.</li>
+            <li>You are reading proof of this step.</li>
+        </ol>
+        <h2>My endpoints are as follows:</h2>
+        <ul>
+            <li>POST - Measurement <br> curl --header 'Content-Type: application/json' \
+                --data '{"rest_id": 13, "meas_time_in": "2000-01-01 02:10:10", "meas_time_out": "2000-01-01 02:10:20", "meas_drive_through": true}' \
+                http://project2.schafftsp.me:8443/measurement
+            </li>
+            <li>DELETE - Measurement <br> curl --request DELETE \
+                http://project2.schafftsp.me:8443/measurement/1
+            </li>
+            <li>GET - Measurement <br> curl http://project2.schafftsp.me:8443/measurement/2
+            </li>
+            <li>PATCH - Measurement <br> curl --header 'Content-Type: application/json' \
+                --request PATCH \
+                --data '{"rest_id": 13, "meas_time_in": "2000-01-01 02:10:10", "meas_time_out": "2000-01-01 02:10:20", "meas_drive_through": true}' \
+                http://project2.schafftsp.me:8443/measurement/1
+            </li>
+            <li>POST - Option <br> curl --header 'Content-Type: application/json' \
+                --data '{"option_name": "example"}' \
+                http://project2.schafftsp.me:8443/option
+            </li>
+            <li>DELETE - Option <br> curl --request DELETE \
+                http://project2.schafftsp.me:8443/option/1
+            </li>
+            <li>GET - Option <br> curl http://project2.schafftsp.me:8443/option/2
+            </li>
+            <li>PATCH - Option <br> curl --header 'Content-Type: application/json' \
+                --request PATCH \
+                --data '{"option_name": "new example"}' \
+                http://project2.schafftsp.me:8443/measurement/2
+            </li>
+            <li>POST - Accessibility <br> curl --header 'Content-Type: application/json' \
+                --data '{"option_id": 3, "rest_id": 3}' \
+                http://project2.schafftsp.me:8443/accessibility
+            </li>
+            <li>DELETE - Accessibility <br> curl --request DELETE \
+                http://project2.schafftsp.me:8443/accessibility/1
+            </li>
+            <li>GET - Accessibility <br> curl http://project2.schafftsp.me:8443/accessibility/2
+            </li>
+            <li>PATCH - Accessibility <br> curl --header 'Content-Type: application/json' \
+                --request PATCH \
+                --data '{"option_id": 4, "rest_id": 4}' \
+                http://project2.schafftsp.me:8443/accessibility/2
+            </li>
+            <li>POST - Restaurant <br> curl --header 'Content-Type: application/json' \
+                --data '{"rest_id": 999, "rest_location": "UREC", "chain_id": 3}' \
+                http://project2.schafftsp.me:8443/restaurant
+            </li>
+            <li>DELETE - Restaurant <br> curl --request DELETE \
+                http://project2.schafftsp.me:8443/restaurant/1
+            </li>
+            <li>GET - Restaurant <br> curl http://project2.schafftsp.me:8443/restaurant/2
+            </li>
+            <li>PATCH - Restaurant <br> curl --header 'Content-Type: application/json' \
+                --request PATCH \
+                --data '{"rest_location": "ECL", "chain_id": 5}' \
+                http://project2.schafftsp.me:8443/restaurant/5
+            </li>
+            <li>POST - Chain <br> curl --header 'Content-Type: application/json' \
+                --data '{"chain_id": 999, "chain_name": "Sam's Hot dogs", "chain_phone": "234-234-2342"}' \
+                http://project2.schafftsp.me:8443/chain
+            </li>
+            <li>DELETE - Chain <br> curl --request DELETE \
+                http://project2.schafftsp.me:8443/chain/1
+            </li>
+            <li>GET - Chain <br> curl http://project2.schafftsp.me:8443/chain/2
+            </li>
+            <li>PATCH - Chain <br> curl --header 'Content-Type: application/json' \
+                --request PATCH \
+                --data '{"chain_name": "Sam's Hot dogs", "chain_phone": "234-234-2342"}' \
+                http://project2.schafftsp.me:8443/chain/5
+            </li>
+        </ul>
+    </body>
+</html>

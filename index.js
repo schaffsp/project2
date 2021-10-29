@@ -441,7 +441,7 @@ async function setupService() {
     // Delete an restaurant in the database
     service.delete('/restaurant/:rest_id', (request, response) => {
         const parameters = [parseInt(request.params.rest_id)];
-        const query = `DELETE drivethru.accessibility FROM drivethru.accessibility WHERE drivethru.accessibility.REST_ID = 3?`;
+        const query = `DELETE drivethru.accessibility FROM drivethru.accessibility WHERE drivethru.accessibility.REST_ID = 3?;`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -455,7 +455,7 @@ async function setupService() {
                 });
             }
         });
-        query = 'DELETE drivethru.measurement FROM drivethru.measurement WHERE drivethru.measurement.REST_ID = ?';
+        query = 'DELETE drivethru.measurement FROM drivethru.measurement WHERE drivethru.measurement.REST_ID = ?;';
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -469,7 +469,7 @@ async function setupService() {
                 });
             }
         });
-        query = 'DELETE drivethru.restaurant FROM drivethru.restaurant WHERE drivethru.restaurant.REST_ID = ?';
+        query = 'DELETE drivethru.restaurant FROM drivethru.restaurant WHERE drivethru.restaurant.REST_ID = ?;';
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -584,7 +584,7 @@ async function setupService() {
         const query = `DELETE drivethru.accessibility FROM drivethru.accessibility
             JOIN drivethru.restaurant ON drivethru.accessibility.REST_ID = drivethru.restaurant.REST_ID
             JOIN drivethru.chain ON drivethru.chain.CHAIN_ID = drivethru.restaurant.CHAIN_ID
-            WHERE drivethru.chain.CHAIN_ID = ?`;
+            WHERE drivethru.chain.CHAIN_ID = ?;`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -601,7 +601,7 @@ async function setupService() {
         query = `DELETE drivethru.measurement FROM drivethru.measurement
         JOIN drivethru.restaurant ON drivethru.measurement.REST_ID = drivethru.restaurant.REST_ID
         JOIN drivethru.chain ON drivethru.chain.CHAIN_ID = drivethru.restaurant.CHAIN_ID
-        WHERE drivethru.chain.CHAIN_ID = ?`;
+        WHERE drivethru.chain.CHAIN_ID = ?;`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -617,7 +617,7 @@ async function setupService() {
         });
         query = `DELETE drivethru.restaurant FROM drivethru.restaurant
         JOIN drivethru.chain ON drivethru.chain.CHAIN_ID = drivethru.restaurant.CHAIN_ID
-        WHERE drivethru.chain.CHAIN_ID = ?`;
+        WHERE drivethru.chain.CHAIN_ID = ?;`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
@@ -631,7 +631,7 @@ async function setupService() {
                 });
             }
         });
-        query = `DELETE drivethru.chain FROM drivethru.chain WHERE drivethru.chain.CHAIN_ID = ?`;
+        query = `DELETE drivethru.chain FROM drivethru.chain WHERE drivethru.chain.CHAIN_ID = ?;`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);

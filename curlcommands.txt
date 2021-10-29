@@ -1,9 +1,9 @@
 curl --header 'Content-Type: application/json' \
   --data '{"rest_id": 13, "meas_time_in": "2000-01-01 02:10:10", "meas_time_out": "2000-01-01 02:10:20", "meas_drive_through": true}' \
-  http://localhost:8443/measurement
+  http://project2.schafftsp.me:8443/measurement
 
 curl --request DELETE \
-  http://localhost:8443/measurement/101
+  http://project2.schafftsp.me:8443/measurement/101
 
 curl http://localhost:8443/measurement/10
 
@@ -11,3 +11,12 @@ curl --header 'Content-Type: application/json' \
   --request PATCH \
   --data '{"rest_id": 13, "meas_time_in": "2000-01-01 02:10:10", "meas_time_out": "2000-01-01 02:10:20", "meas_drive_through": true}' \
   http://localhost:8443/measurement/1
+
+curl --header 'Content-Type: application/json' \
+  --data '{"option_name": "nuts"}' \
+  http://localhost:8443/option
+
+curl --header 'Content-Type: application/json' \
+  --request PATCH \
+  --data '{"option_name":"Vegan+"}' \
+  http://localhost:8443/option/2
