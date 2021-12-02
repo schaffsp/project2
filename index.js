@@ -96,7 +96,7 @@ async function setupService() {
     // Get a measurement from the database based on its id
     service.get('/measurement/:id', (request, response) => {
         const parameters = [parseInt(request.params.id)];
-        const query = `SELECT * FROM drivethru.measurement WHERE drivethru.measurement.rest_id = ?`;
+        const query = `SELECT * FROM drivethru.measurement WHERE drivethru.measurement.REST_ID = ?`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
