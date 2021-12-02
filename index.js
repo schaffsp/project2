@@ -31,6 +31,22 @@ async function setupService() {
         next();
     });
 
+    service.get("/report.html", (req, res) => {
+        var options = {
+            root: path.join(__dirname)
+        };
+         
+        var fileName = 'report.html';
+        res.sendFile(fileName, options, function (err) {
+            if (err) {
+                next(err);
+            } else {
+                console.log('Sent:', fileName);
+                next();
+            }
+        });
+    });
+
     /*--------------------------------------/
     /                                       /
     /              MEASUREMENT              /
@@ -80,13 +96,13 @@ async function setupService() {
     // Get a measurement from the database based on its id
     service.get('/measurement/:id', (request, response) => {
         const parameters = [parseInt(request.params.id)];
-        const query = `SELECT * FROM drivethru.measurement WHERE drivethru.measurement.meas_id = ?`;
+        const query = `SELECT * FROM drivethru.measurement WHERE drivethru.measurement.rest_id = ?`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
                 response.json({
                     ok: false,
-                        results: error.message,
+                    results: error.message,
                 });
             } else {
                 response.json({
@@ -421,7 +437,7 @@ async function setupService() {
     // Get a restaurant given its id
     service.get('/restaurant/:rest_id', (request, response) => {
         const parameters = [parseInt(request.params.rest_id)];
-        const query = `SELECT * FROM drivethru.restaurant WHERE drivethru.restaurant.REST_ID = ?`;
+        const query = `SELECT * FROM drivethru.restaurant`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
