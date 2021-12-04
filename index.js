@@ -712,7 +712,7 @@ function parseRow(row) {
     await createSQLConnection();
     await setupService();
 
-    const port = 8443;
+    const port = 5001;
     service.listen(port, () => {
         console.log("The webservice is live.");
     });
