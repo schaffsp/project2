@@ -594,6 +594,26 @@ async function setupService() {
         });
     });
 
+    // Get all chains
+    service.get('/chains', (request, response) => {
+        const parameters = [parseInt(request.params.chain_id)];
+        const query = `SELECT * FROM drivethru.chain`;
+        connection.query(query, parameters, (error, rows) => {
+            if (error) {
+                response.status(500);
+                response.json({
+                    ok: false,
+                        results: error.message,
+                });
+            } else {
+                response.json({
+                    ok: true,
+                    results: rows.map(parseRow),
+                });
+            }
+        });
+    });
+
     // Delete a chain in the database
     service.delete('/chain/:chain_id', (request, response) => {
         const parameters = [parseInt(request.params.chain_id)];
