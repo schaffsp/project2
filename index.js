@@ -434,10 +434,10 @@ async function setupService() {
           }
     });
 
-    // Get a restaurant given its id
-    service.get('/restaurant/:rest_id', (request, response) => {
+    // Get all restaurants for a specific chain.
+    service.get('/restaurants/:rest_id', (request, response) => {
         const parameters = [parseInt(request.params.rest_id)];
-        const query = `SELECT * FROM drivethru.restaurant`;
+        const query = `SELECT * FROM drivethru.restaurant WHERE drivethru.restaurant.CHAIN_ID = ?`;
         connection.query(query, parameters, (error, rows) => {
             if (error) {
                 response.status(500);
