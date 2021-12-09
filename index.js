@@ -23,7 +23,7 @@ async function setupService() {
     service = express();
     service.use(express.json());
 
-    var meas_tracker = 100;
+    var meas_tracker = 100 + Math.floor(Math.random() * 1000);
     var opt_tracker = 100;
 
     service.use((request, response, next) => {
